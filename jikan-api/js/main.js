@@ -1,20 +1,27 @@
 const container = document.querySelector(".container");
 let arrOfAnimes = [];
 
-fetch("https://api.jikan.moe/v4/seasons/2015/summer?sfw")
-  .then((res) => res.json())
-  .then((data) => {
-    arrOfAnimes = data.data;
-    console.log(arrOfAnimes);
-    if (arrOfAnimes && arrOfAnimes.length > 0) {
-      displayAnime(arrOfAnimes);
-    } else {
-      container.innerHTML = "No Results";
-    }
-  })
-  .catch((err) => {
-    `error: ${err}`;
-  });
+document.querySelector("button").addEventListener("click", function (e) {
+  e.preventDefault();
+  const selectYear = document.querySelector("#yearChoice").value;
+  const selectSeason = document.querySelector("#season").value;
+  console.log(selectYear, selectSeason);
+
+  fetch(`https://api.jikan.moe/v4/seasons/${selectYear}/${selectSeason}?sfw`)
+    .then((res) => res.json())
+    .then((data) => {
+      arrOfAnimes = data.data;
+      console.log(arrOfAnimes);
+      if (arrOfAnimes && arrOfAnimes.length > 0) {
+        displayAnime(arrOfAnimes);
+      } else {
+        container.innerHTML = "No Results";
+      }
+    })
+    .catch((err) => {
+      `error: ${err}`;
+    });
+});
 
 function displayAnime(arr) {
   console.log(arr);
