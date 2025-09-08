@@ -5,15 +5,24 @@ document.querySelector("button").addEventListener("click", function () {
   console.log(dateChoice);
 
   fetch(
-    `https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&date=${dateChoice}`
+    `https://api.nasa.gov/planetary/apod?api_key=zU71SV2z8UAS2tpSRxtx9Ii4giGUAk6QIufK4bCn&date=${dateChoice}`
   )
     .then((res) => res.json())
     .then((data) => {
       document.querySelector("h2").innerText = data.title;
-      document.querySelector("img").src = data.hdurl;
+
+      if (data.media_type === "image") {
+        document.querySelector("iframe").style.display = "none";
+        document.querySelector("img").style.display = "block";
+        document.querySelector("img").src = data.hdurl;
+      } else if (data.media_type === "video") {
+        document.querySelector("img").style.display = "none";
+        document.querySelector("iframe").style.display = "block";
+        document.querySelector("iframe").src = data.url;
+      }
+
       document.querySelector("h3").innerText = data.explanation;
       document.querySelector("span").innerText = data.date;
-
       console.log(data);
     })
     .catch((err) => {
