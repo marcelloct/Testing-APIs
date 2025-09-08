@@ -1,6 +1,7 @@
 let deckID = "";
 let player1Score = 0;
 let player2Score = 0;
+let round = 1;
 
 fetch(`https://www.deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1`)
   .then((res) => res.json())
@@ -21,8 +22,9 @@ function drawTwo() {
     .then((data) => {
       console.log(data);
 
-      // Display the score
       const displayScore = document.querySelector("#score");
+
+      const displayRound = document.querySelector("#round");
 
       // Display the card
       document.querySelector("#player1").src = data.cards[0].image;
@@ -41,6 +43,23 @@ function drawTwo() {
         displayScore.innerText = `P1: ${player1Score} | P2: ${(player2Score += 1)}`;
       } else {
         document.querySelector("h3").innerText = "Time for War!";
+      }
+
+      // Display Round
+      displayRound.innerText = `Round: ${round++}`;
+
+      // if 'round' is greater than 9, remove the button and shows the Winner
+      if (round > 9) {
+        document.querySelector("button").style.display = "none";
+        if (player1Score > player2Score) {
+          document.querySelector(
+            "h1"
+          ).innerText = `Player 1 Wins the game | Final Score: P1: ${player1Score} | P2: ${player2Score}`;
+        } else if (player1Score < player2Score) {
+          document.querySelector(
+            "h1"
+          ).innerText = `Player 2 Wins the game | Final Score: P1: ${player1Score} | P2: ${player2Score}`;
+        }
       }
     })
     .catch((err) => {
@@ -62,8 +81,6 @@ function convertToNum(val) {
   }
 }
 
-// 9 rounds
-// show score
 // if war, draw another card and the winner double the points
 // reset when game is over
 // local store the deck id to use the same deck always
