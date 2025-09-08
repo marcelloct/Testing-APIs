@@ -3,6 +3,14 @@ let player1Score = 0;
 let player2Score = 0;
 let round = 1;
 
+const dealCardButton = document.querySelector("#deal-card");
+const resetButton = document.querySelector("#reset");
+
+const displayRoundResult = document.querySelector("h3");
+const displayFinalScore = document.querySelector("h1");
+const displayScore = document.querySelector("#score");
+const displayRound = document.querySelector("#round");
+
 fetch(`https://www.deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1`)
   .then((res) => res.json())
   .then((data) => {
@@ -13,7 +21,8 @@ fetch(`https://www.deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1`)
     console.log(`error ${err}`);
   });
 
-document.querySelector("button").addEventListener("click", drawTwo);
+dealCardButton.addEventListener("click", drawTwo);
+resetButton.addEventListener("click", resetGame);
 
 function drawTwo() {
   const url = `https://www.deckofcardsapi.com/api/deck/${deckID}/draw/?count=2`;
@@ -21,10 +30,6 @@ function drawTwo() {
     .then((res) => res.json())
     .then((data) => {
       console.log(data);
-
-      const displayScore = document.querySelector("#score");
-
-      const displayRound = document.querySelector("#round");
 
       // Display the card
       document.querySelector("#player1").src = data.cards[0].image;
@@ -36,13 +41,13 @@ function drawTwo() {
 
       // Check who is the winner and increment the score
       if (player1Val > player2Val) {
-        document.querySelector("h3").innerText = "Player 1 Wins";
+        displayRoundResult.innerText = "Player 1 Wins";
         displayScore.innerText = `P1: ${(player1Score += 1)} | P2: ${player2Score}`;
       } else if (player1Val < player2Val) {
-        document.querySelector("h3").innerText = "Player 2 Wins";
+        displayRoundResult.innerText = "Player 2 Wins";
         displayScore.innerText = `P1: ${player1Score} | P2: ${(player2Score += 1)}`;
       } else {
-        document.querySelector("h3").innerText = "Time for War!";
+        displayRoundResult.innerText = "Time for War!";
       }
 
       // Display Round
@@ -50,16 +55,22 @@ function drawTwo() {
 
       // if 'round' is greater than 9, remove the button and shows the Winner
       if (round > 9) {
-        document.querySelector("button").style.display = "none";
+        dealCardButton.classList.toggle("hidden");
+
         if (player1Score > player2Score) {
-          document.querySelector(
-            "h1"
-          ).innerText = `Player 1 Wins the game | Final Score: P1: ${player1Score} | P2: ${player2Score}`;
+          displayFinalScore.innerText = `Player 1 Wins the game | Final Score: P1: ${player1Score} | P2: ${player2Score}`;
         } else if (player1Score < player2Score) {
-          document.querySelector(
-            "h1"
-          ).innerText = `Player 2 Wins the game | Final Score: P1: ${player1Score} | P2: ${player2Score}`;
+          displayFinalScore.innerText = `Player 2 Wins the game | Final Score: P1: ${player1Score} | P2: ${player2Score}`;
         }
+      }
+
+      // Reload the page if no remaining cards to draw
+      if (data.remaining === 0) {
+        displayFinalScore.innerText =
+          "Not enough cards remaining to draw, page wil be reloaded";
+        setTimeout(function () {
+          location.reload();
+        }, 5000);
       }
     })
     .catch((err) => {
@@ -81,6 +92,16 @@ function convertToNum(val) {
   }
 }
 
+function resetGame() {
+  player1Score = 0;
+  player2Score = 0;
+  round = 1;
+  displayFinalScore.innerText = "War Game";
+  displayRoundResult.innerText = "";
+  displayScore.innerText = "";
+  displayRound.innerText = "";
+  dealCardButton.classList.toggle("hidden");
+}
+
 // if war, draw another card and the winner double the points
-// reset when game is over
 // local store the deck id to use the same deck always
