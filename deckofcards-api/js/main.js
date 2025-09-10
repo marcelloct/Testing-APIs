@@ -9,7 +9,7 @@ const resetButton = document.querySelector("#reset");
 const displayRoundResult = document.querySelector("h3");
 const displayFinalScore = document.querySelector("h1");
 const displayScore = document.querySelector("#score");
-const displayRound = document.querySelector("#round");
+const displayRemainingCards = document.querySelector("#remaining-cards");
 
 fetch(`https://www.deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1`)
   .then((res) => res.json())
@@ -47,22 +47,11 @@ function drawTwo() {
         displayRoundResult.innerText = "Player 2 Wins";
         displayScore.innerText = `P1: ${player1Score} | P2: ${(player2Score += 1)}`;
       } else {
-        displayRoundResult.innerText = "Time for War!";
+        displayRoundResult.innerText = "Draw";
       }
 
-      // Display Round
-      displayRound.innerText = `Round: ${round++}`;
-
-      // if 'round' is greater than 9, remove the button and shows the Winner
-      if (round > 9) {
-        dealCardButton.classList.toggle("hidden");
-
-        if (player1Score > player2Score) {
-          displayFinalScore.innerText = `Player 1 Wins the game | Final Score: P1: ${player1Score} | P2: ${player2Score}`;
-        } else if (player1Score < player2Score) {
-          displayFinalScore.innerText = `Player 2 Wins the game | Final Score: P1: ${player1Score} | P2: ${player2Score}`;
-        }
-      }
+      // Display Remaining Cards
+      displayRemainingCards.innerText = `Cards Remainig: ${data.remaining}`;
 
       // Reload the page if no remaining cards to draw
       if (data.remaining === 0) {
@@ -103,5 +92,7 @@ function resetGame() {
   dealCardButton.classList.toggle("hidden");
 }
 
-// if war, draw another card and the winner double the points
 // local store the deck id to use the same deck always
+
+// if war, draw another card and the winner double the points
+// *** probably assign the two values from each player cards in an array and sum them, next multiply the score by 2
